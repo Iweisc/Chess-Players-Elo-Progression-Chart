@@ -137,9 +137,9 @@ plt.rcParams['axes.labelcolor'] = '#c9d1d9'
 plt.rcParams['xtick.color'] = '#c9d1d9'
 plt.rcParams['ytick.color'] = '#c9d1d9'
 
-# Create figure with subplots (reduced size to fit screen better)
-fig = plt.figure(figsize=(16, 12), dpi=120)
-gs = gridspec.GridSpec(3, 2, height_ratios=[5, 1, 1], width_ratios=[4, 1])
+# Create figure with subplots (adjusted for better text spacing)
+fig = plt.figure(figsize=(18, 14), dpi=100)
+gs = gridspec.GridSpec(3, 2, height_ratios=[5, 1.5, 1.5], width_ratios=[4, 1])
 
 # Main heatmap plot
 ax_main = plt.subplot(gs[0, 0])
@@ -264,14 +264,14 @@ for i, player in enumerate(df.columns):
     ax_main.plot(trend_ages, [y] * len(trend_ages), '-', color='#8b949e', 
                 alpha=0.3, linewidth=0.5, zorder=2)
 
-# Add player labels on y-axis with custom styling (simplified for better fit)
+# Add player labels on y-axis with custom styling (improved spacing)
 ax_main.set_yticks([i * total_cell_size for i in range(len(df.columns))])
 player_labels = []
 for player in df.columns:
     # Add player name with peak rating
     peak_rating = max([rating for _, rating in players_data[player]])
     player_labels.append(f"{player} ({peak_rating})")
-ax_main.set_yticklabels(player_labels, fontsize=9)
+ax_main.set_yticklabels(player_labels, fontsize=8)
 
 # Style the y-tick labels
 for tick in ax_main.yaxis.get_major_ticks():
@@ -299,18 +299,18 @@ ax_main.set_ylim(-0.5, len(df.columns) * total_cell_size - 0.5)
 
 # Add titles and labels with enhanced styling (shortened title)
 title = ax_main.set_title('Chess Grandmasters ELO Rating Progression', 
-                fontsize=16, fontweight='bold', pad=15, color='#c9d1d9')
+                fontsize=14, fontweight='bold', pad=15, color='#c9d1d9')
 # Add subtle glow effect to title
 title.set_path_effects([path_effects.withStroke(linewidth=3, foreground='#161b22')])
 
-ax_main.set_xlabel('Age', fontsize=12, labelpad=8, color='#c9d1d9', fontweight='bold')
+ax_main.set_xlabel('Age', fontsize=10, labelpad=8, color='#c9d1d9', fontweight='bold')
 
 # Create an enhanced color legend in the separate axis
 ax_legend.axis('off')
 
 # Add rating level legend with more detailed gradations
 legend_title = ax_legend.text(0.5, 0.95, "Rating Levels", 
-                            ha='center', va='top', fontsize=12, 
+                            ha='center', va='top', fontsize=10, 
                             fontweight='bold', color='#c9d1d9')
 legend_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
@@ -349,37 +349,37 @@ for i, level in enumerate(rating_levels):
     ax_legend.text(x_pos + 0.1, y_pos, level["label"], fontsize=8, 
                   va='center', color='#c9d1d9')
 
-# Add indicators legend with enhanced styling
-indicator_title = ax_legend.text(0.5, 0.3, "Indicators", ha='center', va='top', 
-                               fontsize=12, fontweight='bold', color='#c9d1d9')
+# Add indicators legend with enhanced styling (better spacing)
+indicator_title = ax_legend.text(0.5, 0.25, "Indicators", ha='center', va='top', 
+                               fontsize=10, fontweight='bold', color='#c9d1d9')
 indicator_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
 # World champion indicator with enhanced styling
-ax_legend.plot(0.15, 0.2, marker='$♔$', markersize=10, color='gold')
-ax_legend.text(0.25, 0.2, "World Champion", fontsize=10, va='center', color='#c9d1d9',
+ax_legend.plot(0.15, 0.15, marker='$♔$', markersize=8, color='gold')
+ax_legend.text(0.25, 0.15, "World Champion", fontsize=8, va='center', color='#c9d1d9',
               path_effects=[path_effects.withStroke(linewidth=1, foreground='#161b22')])
 
 # Notable achievement indicator with enhanced styling
-ax_legend.plot(0.15, 0.1, marker='*', markersize=10, color='gold', 
+ax_legend.plot(0.15, 0.05, marker='*', markersize=8, color='gold', 
               markeredgecolor='#30363d', markeredgewidth=0.5)
-ax_legend.text(0.25, 0.1, "Notable Achievement", fontsize=10, va='center', color='#c9d1d9',
+ax_legend.text(0.25, 0.05, "Notable Achievement", fontsize=8, va='center', color='#c9d1d9',
               path_effects=[path_effects.withStroke(linewidth=1, foreground='#161b22')])
 
-# Add statistics section
-stats_title = ax_legend.text(0.5, -0.05, "Statistics", ha='center', va='top', 
-                           fontsize=12, fontweight='bold', color='#c9d1d9')
+# Add statistics section (moved down for better spacing)
+stats_title = ax_legend.text(0.5, -0.15, "Statistics", ha='center', va='top', 
+                           fontsize=10, fontweight='bold', color='#c9d1d9')
 stats_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
-# Calculate and display some statistics
+# Calculate and display some statistics (adjusted positions)
 total_cells = sum(len(player_data) for player in df.columns for player_data in [df[player].dropna()])
-ax_legend.text(0.1, -0.15, f"Total Data Points: {total_cells:,}", fontsize=9, color='#c9d1d9')
-ax_legend.text(0.1, -0.2, f"Date Range: Ages 10-75", fontsize=9, color='#c9d1d9')
-ax_legend.text(0.1, -0.25, f"Rating Range: {min_rating}-{max_rating}", fontsize=9, color='#c9d1d9')
+ax_legend.text(0.1, -0.25, f"Total Data Points: {total_cells:,}", fontsize=8, color='#c9d1d9')
+ax_legend.text(0.1, -0.35, f"Date Range: Ages 10-75", fontsize=8, color='#c9d1d9')
+ax_legend.text(0.1, -0.45, f"Rating Range: {min_rating}-{max_rating}", fontsize=8, color='#c9d1d9')
 
 # Create enhanced rating categories section in info panel
 ax_info.axis('off')
 info_title = ax_info.set_title('Rating Categories and Historical Context', 
-                             fontsize=14, fontweight='bold', color='#c9d1d9')
+                             fontsize=12, fontweight='bold', color='#c9d1d9')
 info_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
 # Create a grid for the info panel with 2 columns instead of 3
@@ -398,7 +398,7 @@ ax_categories.add_patch(
 
 # Add a title for the section
 cat_title = ax_categories.text(0.5, 0.95, "FIDE Rating Categories", 
-                             fontsize=12, fontweight='bold', color='#c9d1d9',
+                             fontsize=10, fontweight='bold', color='#c9d1d9',
                              ha='center', va='top', zorder=2)
 cat_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
@@ -406,7 +406,8 @@ cat_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#16
 category_data = [[cat['name'], f"{cat['min']}-{cat['max']}"] for cat in rating_categories]
 
 for i, (name, range_text) in enumerate(category_data):
-    y_pos = 0.85 - (i * 0.08)
+    # Adjust spacing based on number of categories
+    y_pos = 0.85 - (i * (0.7 / len(category_data)))
     # Category name with color indicator
     color = rating_categories[i]['color']
     ax_categories.add_patch(
@@ -414,12 +415,12 @@ for i, (name, range_text) in enumerate(category_data):
                          facecolor=color, edgecolor='#30363d',
                          linewidth=0.5, alpha=0.7, zorder=2)
     )
-    ax_categories.text(0.1, y_pos, name, fontsize=9, color='#c9d1d9', 
+    ax_categories.text(0.1, y_pos, name, fontsize=7, color='#c9d1d9', 
                       ha='left', va='center', zorder=2,
                       path_effects=[path_effects.withStroke(linewidth=1, foreground='#161b22')])
     
     # Rating range
-    ax_categories.text(0.7, y_pos, range_text, fontsize=9, color='#c9d1d9', 
+    ax_categories.text(0.7, y_pos, range_text, fontsize=7, color='#c9d1d9', 
                       ha='left', va='center', zorder=2)
     
     # Add separator line
@@ -440,7 +441,7 @@ ax_history.add_patch(
 
 # Add a title for the section
 hist_title = ax_history.text(0.5, 0.95, "Historical Context", 
-                           fontsize=12, fontweight='bold', color='#c9d1d9',
+                           fontsize=10, fontweight='bold', color='#c9d1d9',
                            ha='center', va='top', zorder=2)
 hist_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
@@ -455,9 +456,9 @@ historical_notes = [
 
 y_pos = 0.85
 for note in historical_notes:
-    ax_history.text(0.05, y_pos, note, fontsize=9, va='top', ha='left', 
+    ax_history.text(0.05, y_pos, note, fontsize=7, va='top', ha='left', 
                    color='#c9d1d9', zorder=2)
-    y_pos -= 0.15
+    y_pos -= 0.12
 
 # Combine historical context and achievements in one panel
 historical_notes.extend([
@@ -470,7 +471,7 @@ historical_notes.extend([
 # Create an enhanced timeline of chess history in the bottom panel
 ax_timeline.axis('off')
 timeline_title = ax_timeline.set_title('Timeline of Chess History', 
-                                     fontsize=14, fontweight='bold', color='#c9d1d9')
+                                     fontsize=12, fontweight='bold', color='#c9d1d9')
 timeline_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
 # Add a background panel
@@ -539,10 +540,10 @@ for event in timeline_events:
         y_text = 0.3
         va = 'top'
     
-    # Add text with custom styling
-    event_text = ax_timeline.text(x_pos, y_text, event["event"], fontsize=text_size, 
+    # Add text with custom styling (smaller text and wider boxes)
+    event_text = ax_timeline.text(x_pos, y_text, event["event"], fontsize=text_size-1, 
                                 ha='center', va=va, color='#c9d1d9', fontweight=text_weight,
-                                bbox=dict(boxstyle="round,pad=0.2", fc='#161b22', ec='#30363d', alpha=0.8),
+                                bbox=dict(boxstyle="round,pad=0.3", fc='#161b22', ec='#30363d', alpha=0.8),
                                 zorder=4)
     
     # Add subtle glow effect for major events
@@ -574,7 +575,7 @@ fig.text(0.01, 0.01, "Created with matplotlib • Data source: FIDE and historic
 
 # Adjust layout with more space between elements
 plt.tight_layout()
-fig.subplots_adjust(hspace=0.4, wspace=0.1)
-plt.savefig('chess_grandmasters_github_style_detailed.png', dpi=150, bbox_inches='tight', 
-           facecolor='#0d1117', pad_inches=0.2)
+fig.subplots_adjust(hspace=0.6, wspace=0.2)
+plt.savefig('chess_grandmasters_github_style_detailed.png', dpi=120, bbox_inches='tight', 
+           facecolor='#0d1117', pad_inches=0.3)
 plt.show()
