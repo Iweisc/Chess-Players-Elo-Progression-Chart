@@ -126,18 +126,17 @@ rating_categories = [
     {'name': 'All-Time Great', 'min': 2900, 'max': 3000, 'color': '#d9d9d9'}
 ]
 
-# Set up the plot with a custom style
+# Set up the plot with a simpler style for better performance
 plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.serif'] = ['Times New Roman']
+plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['axes.facecolor'] = '#f8f9fa'
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = '#cccccc'
 plt.rcParams['grid.linestyle'] = ':'
 plt.rcParams['grid.linewidth'] = 0.5
 
-# Create figure with subplots
-fig = plt.figure(figsize=(20, 16))
+# Create figure with subplots (reduced size for better performance)
+fig = plt.figure(figsize=(16, 12))
 gs = gridspec.GridSpec(2, 2, height_ratios=[4, 1], width_ratios=[5, 1])
 
 # Main plot
@@ -145,12 +144,12 @@ ax_main = plt.subplot(gs[0, 0])
 ax_legend = plt.subplot(gs[0, 1])
 ax_info = plt.subplot(gs[1, :])
 
-# Add background color bands for rating categories
+# Add background color bands for rating categories (with reduced alpha for performance)
 for category in rating_categories:
-    ax_main.axhspan(category['min'], category['max'], alpha=0.1, color=category['color'], 
+    ax_main.axhspan(category['min'], category['max'], alpha=0.05, color=category['color'], 
                    zorder=0, label=category['name'])
 
-# Plot each player's data with enhanced styling
+# Plot each player's data with simplified styling for better performance
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22']
 markers = ['o', 's', '^', 'D', 'x', '*', 'p', 'h', 'v']
 linestyles = ['-', '--', '-.', ':', '-', '--', '-.', ':', '-']
@@ -159,139 +158,132 @@ for i, (player, data) in enumerate(players_data.items()):
     ages, ratings = zip(*data)
     color = colors[i % len(colors)]
     
-    # Plot the main line with enhanced styling
+    # Plot the main line with simplified styling
     line = ax_main.plot(ages, ratings, marker=markers[i % len(markers)], 
-             linestyle=linestyles[i % len(linestyles)], linewidth=3, 
-             label=player, color=color, markersize=8, markeredgewidth=1.5,
+             linestyle=linestyles[i % len(linestyles)], linewidth=2, 
+             label=player, color=color, markersize=5, markeredgewidth=0.5,
              markeredgecolor='white', zorder=5, alpha=0.9)
     
-    # Add a subtle shadow effect to the line
-    ax_main.plot(ages, ratings, linewidth=5, color=color, alpha=0.3, zorder=4)
+    # Remove shadow effect for better performance
     
-    # Highlight world championship periods
+    # Highlight world championship periods (with smaller markers)
     if player in world_champion_periods:
         for start_year, end_year in world_champion_periods[player]:
             # Find ages that correspond to championship years
             birth_year = 0  # This is approximate
+            # Only mark start and end years for better performance
+            championship_ages = []
             for age in ages:
                 if start_year - birth_year <= age <= end_year - birth_year:
-                    idx = ages.index(age)
-                    if idx < len(ratings):
-                        ax_main.plot(age, ratings[idx], 'o', markersize=12, 
-                                    markerfacecolor='gold', markeredgecolor=color, 
-                                    markeredgewidth=2, alpha=0.8, zorder=6)
+                    if age == start_year - birth_year or age == end_year - birth_year or age % 3 == 0:
+                        championship_ages.append(age)
+            
+            for age in championship_ages:
+                idx = ages.index(age)
+                if idx < len(ratings):
+                    ax_main.plot(age, ratings[idx], 'o', markersize=8, 
+                                markerfacecolor='gold', markeredgecolor=color, 
+                                markeredgewidth=1, alpha=0.8, zorder=6)
     
-    # Add notable achievements
+    # Add notable achievements (with simplified styling)
     if player in notable_events:
         for age, event in notable_events[player]:
             if age in ages:
                 idx = ages.index(age)
                 if idx < len(ratings):
                     rating = ratings[idx]
-                    # Add star marker
-                    ax_main.plot(age, rating, marker='*', markersize=20, 
+                    # Add star marker (smaller size)
+                    ax_main.plot(age, rating, marker='*', markersize=12, 
                                 color='gold', markeredgecolor='black', 
-                                markeredgewidth=1.5, zorder=7)
+                                markeredgewidth=0.5, zorder=7)
                     
-                    # Add annotation with event description
+                    # Add annotation with event description (simplified)
                     text = ax_main.annotate(event, 
                                 xy=(age, rating), 
-                                xytext=(15, 15),
+                                xytext=(10, 10),
                                 textcoords='offset points',
-                                fontsize=9, fontweight='bold',
-                                bbox=dict(boxstyle="round,pad=0.3", fc='white', ec=color, alpha=0.8),
-                                arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2", 
-                                                color=color, lw=1.5),
+                                fontsize=8,
+                                bbox=dict(boxstyle="round,pad=0.2", fc='white', ec=color, alpha=0.7),
+                                arrowprops=dict(arrowstyle="->", color=color, lw=1),
                                 zorder=8)
-                    
-                    # Add path effect to make text more readable
-                    text.set_path_effects([path_effects.withStroke(linewidth=3, foreground='white')])
 
-# Add annotations for peak ratings with enhanced styling
+# Add annotations for peak ratings (simplified for performance)
 for player, data in players_data.items():
     ages, ratings = zip(*data)
     max_rating = max(ratings)
     max_age = ages[ratings.index(max_rating)]
     
-    # Create a more visible annotation for peak rating
-    text = ax_main.annotate(f"Peak: {max_rating}", 
+    # Create a simpler annotation for peak rating
+    ax_main.annotate(f"Peak: {max_rating}", 
                  xy=(max_age, max_rating),
-                 xytext=(0, 15),
+                 xytext=(0, 10),
                  textcoords='offset points',
                  ha='center',
-                 fontsize=10,
-                 fontweight='bold',
-                 bbox=dict(boxstyle="round,pad=0.3", fc='white', ec='black', alpha=0.7))
-    
-    # Add path effect to make text more readable
-    text.set_path_effects([path_effects.withStroke(linewidth=3, foreground='white')])
+                 fontsize=8,
+                 bbox=dict(boxstyle="round,pad=0.2", fc='white', ec='black', alpha=0.5))
 
-# Enhance grid and ticks
-ax_main.grid(True, linestyle='--', alpha=0.7, which='both')
+# Simplify grid and ticks for better performance
+ax_main.grid(True, linestyle='--', alpha=0.5, which='major')
 ax_main.set_axisbelow(True)
 ax_main.xaxis.set_major_locator(MultipleLocator(5))
-ax_main.xaxis.set_minor_locator(MultipleLocator(1))
+# Remove minor ticks for better performance
 ax_main.yaxis.set_major_locator(MultipleLocator(100))
-ax_main.yaxis.set_minor_locator(MultipleLocator(25))
-ax_main.tick_params(axis='both', which='major', labelsize=12)
+ax_main.tick_params(axis='both', which='major', labelsize=10)
 
 # Set axis limits with some padding
 ax_main.set_xlim(9, 73)
 ax_main.set_ylim(1950, 2950)
 
-# Add titles and labels with enhanced styling
-title = ax_main.set_title('ELO Rating Progression of Chess Grandmasters Throughout Their Careers', 
-                        fontsize=22, fontweight='bold', pad=20)
-title.set_path_effects([path_effects.withStroke(linewidth=3, foreground='white')])
+# Add titles and labels with simplified styling
+ax_main.set_title('ELO Rating Progression of Chess Grandmasters Throughout Their Careers', 
+                fontsize=18, fontweight='bold', pad=15)
 
-ax_main.set_xlabel('Age', fontsize=18, fontweight='bold', labelpad=15)
-ax_main.set_ylabel('ELO Rating', fontsize=18, fontweight='bold', labelpad=15)
+ax_main.set_xlabel('Age', fontsize=14, labelpad=10)
+ax_main.set_ylabel('ELO Rating', fontsize=14, labelpad=10)
 
-# Create a custom legend in the separate axis
+# Create a simpler legend in the separate axis
 ax_legend.axis('off')
 legend_elements = []
 
-# Add player legend entries
+# Add player legend entries with simplified styling
 for i, player in enumerate(players_data.keys()):
     color = colors[i % len(colors)]
     marker = markers[i % len(markers)]
     linestyle = linestyles[i % len(linestyles)]
     
-    # Create custom legend entry
+    # Create simplified legend entry
     legend_elements.append(plt.Line2D([0], [0], color=color, marker=marker, 
-                                     linestyle=linestyle, linewidth=3, markersize=10,
-                                     markerfacecolor=color, markeredgecolor='white',
+                                     linestyle=linestyle, linewidth=2, markersize=6,
                                      label=player))
 
-# Add world champion indicator to legend
+# Add world champion indicator to legend (simplified)
 legend_elements.append(plt.Line2D([0], [0], marker='o', color='white', 
-                                 markerfacecolor='gold', markersize=12, 
-                                 markeredgecolor='black', markeredgewidth=1.5,
+                                 markerfacecolor='gold', markersize=8, 
+                                 markeredgecolor='black', markeredgewidth=0.5,
                                  label='World Champion Period'))
 
-# Add notable achievement indicator to legend
+# Add notable achievement indicator to legend (simplified)
 legend_elements.append(plt.Line2D([0], [0], marker='*', color='white', 
-                                 markerfacecolor='gold', markersize=15, 
-                                 markeredgecolor='black', markeredgewidth=1.5,
+                                 markerfacecolor='gold', markersize=10, 
+                                 markeredgecolor='black', markeredgewidth=0.5,
                                  label='Notable Achievement'))
 
-# Create the legend with enhanced styling
+# Create the legend with simplified styling
 legend = ax_legend.legend(handles=legend_elements, loc='center left', 
-                         fontsize=14, frameon=True, framealpha=0.95,
-                         edgecolor='black', fancybox=True, shadow=True)
+                         fontsize=12, frameon=True, framealpha=0.9)
 
-# Add rating category legend to the info panel
+# Simplify the info panel for better performance
 ax_info.axis('off')
-ax_info.set_title('Rating Categories and Historical Context', fontsize=16, fontweight='bold')
+ax_info.set_title('Rating Categories and Historical Context', fontsize=14)
 
-# Create a grid for the info panel
-info_grid = gridspec.GridSpecFromSubplotSpec(2, 4, subplot_spec=gs[1, :])
+# Create a simpler grid for the info panel
+info_grid = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[1, :])
 
-# Rating categories section
-ax_categories = fig.add_subplot(info_grid[0, :2])
+# Rating categories section (simplified)
+ax_categories = fig.add_subplot(info_grid[0, 0])
 ax_categories.axis('off')
 
-# Create a table for rating categories
+# Create a simplified table for rating categories
 category_data = [[cat['name'], f"{cat['min']}-{cat['max']}"] for cat in rating_categories]
 category_colors = [cat['color'] for cat in rating_categories]
 
@@ -300,17 +292,17 @@ table = ax_categories.table(cellText=category_data,
                            loc='center', cellLoc='center',
                            colWidths=[0.6, 0.4])
 table.auto_set_font_size(False)
-table.set_fontsize(12)
-table.scale(1, 1.5)
+table.set_fontsize(10)
+table.scale(1, 1.2)
 
-# Color the rows according to category colors
+# Color the rows according to category colors (with reduced alpha)
 for i, color in enumerate(category_colors):
     for j in range(2):
         table[(i+1, j)].set_facecolor(color)
-        table[(i+1, j)].set_alpha(0.3)
+        table[(i+1, j)].set_alpha(0.2)
 
-# Historical context section
-ax_history = fig.add_subplot(info_grid[0, 2:])
+# Historical context section (simplified)
+ax_history = fig.add_subplot(info_grid[0, 1])
 ax_history.axis('off')
 
 historical_notes = [
@@ -323,30 +315,13 @@ historical_notes = [
 
 y_pos = 0.9
 for note in historical_notes:
-    ax_history.text(0.05, y_pos, note, fontsize=12, va='top', ha='left')
+    ax_history.text(0.05, y_pos, note, fontsize=10, va='top', ha='left')
     y_pos -= 0.2
 
-# Add data source and methodology notes
-ax_notes = fig.add_subplot(info_grid[1, :])
-ax_notes.axis('off')
+# Remove the watermark for better performance
 
-methodology_text = """
-Data Methodology: Historical ELO ratings are approximate, especially for players from earlier eras before the official FIDE rating system.
-For pre-1970 players, ratings are estimated based on tournament performances and historical analyses.
-World Championship periods are highlighted with gold markers. Notable achievements are marked with gold stars.
-"""
-
-ax_notes.text(0.5, 0.5, methodology_text, fontsize=12, va='center', ha='center', 
-             wrap=True, style='italic', bbox=dict(boxstyle="round,pad=0.5", 
-                                                 fc='#f8f9fa', ec='#cccccc'))
-
-# Add a subtle chess-themed watermark
-ax_main.text(0.5, 0.5, '♚', fontsize=300, color='#f0f0f0', 
-            ha='center', va='center', alpha=0.2, zorder=0,
-            transform=ax_main.transAxes)
-
-# Adjust layout and save with high resolution
+# Adjust layout and save with lower resolution for better performance
 plt.tight_layout()
 fig.subplots_adjust(hspace=0.2, wspace=0.05)
-plt.savefig('chess_grandmasters_elo_progression_detailed.png', dpi=600, bbox_inches='tight')
+plt.savefig('chess_grandmasters_elo_progression.png', dpi=150, bbox_inches='tight')
 plt.show()
