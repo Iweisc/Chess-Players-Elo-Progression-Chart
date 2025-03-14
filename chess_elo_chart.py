@@ -137,9 +137,9 @@ plt.rcParams['axes.labelcolor'] = '#c9d1d9'
 plt.rcParams['xtick.color'] = '#c9d1d9'
 plt.rcParams['ytick.color'] = '#c9d1d9'
 
-# Create figure with subplots (higher resolution)
-fig = plt.figure(figsize=(24, 18), dpi=150)
-gs = gridspec.GridSpec(3, 2, height_ratios=[5, 1, 1], width_ratios=[5, 1])
+# Create figure with subplots (reduced size to fit screen better)
+fig = plt.figure(figsize=(16, 12), dpi=120)
+gs = gridspec.GridSpec(3, 2, height_ratios=[5, 1, 1], width_ratios=[4, 1])
 
 # Main heatmap plot
 ax_main = plt.subplot(gs[0, 0])
@@ -188,17 +188,17 @@ min_rating = 2000
 max_rating = 2900
 norm = Normalize(vmin=min_rating, vmax=max_rating)
 
-# Cell size and spacing (smaller cells for more detail)
-cell_size = 0.15
-cell_spacing = 0.05
+# Cell size and spacing (adjusted for better screen fit)
+cell_size = 0.25
+cell_spacing = 0.1
 total_cell_size = cell_size + cell_spacing
 
 # Draw the highly detailed GitHub-style contribution grid
 for i, player in enumerate(df.columns):
     player_data = df[player].dropna()
     
-    # Sample data points to avoid overcrowding (show every 2 weeks)
-    sampled_data = [(age, rating) for j, (age, rating) in enumerate(player_data.items()) if j % 2 == 0]
+    # Sample data points to avoid overcrowding (show every month instead of every 2 weeks)
+    sampled_data = [(age, rating) for j, (age, rating) in enumerate(player_data.items()) if j % 4 == 0]
     
     for j, (age, rating) in enumerate(sampled_data):
         # Calculate cell position
@@ -264,14 +264,14 @@ for i, player in enumerate(df.columns):
     ax_main.plot(trend_ages, [y] * len(trend_ages), '-', color='#8b949e', 
                 alpha=0.3, linewidth=0.5, zorder=2)
 
-# Add player labels on y-axis with custom styling
+# Add player labels on y-axis with custom styling (simplified for better fit)
 ax_main.set_yticks([i * total_cell_size for i in range(len(df.columns))])
 player_labels = []
 for player in df.columns:
     # Add player name with peak rating
     peak_rating = max([rating for _, rating in players_data[player]])
     player_labels.append(f"{player} ({peak_rating})")
-ax_main.set_yticklabels(player_labels, fontsize=10)
+ax_main.set_yticklabels(player_labels, fontsize=9)
 
 # Style the y-tick labels
 for tick in ax_main.yaxis.get_major_ticks():
@@ -297,13 +297,13 @@ ax_main.set_axisbelow(True)
 ax_main.set_xlim(9.5, 73.5)
 ax_main.set_ylim(-0.5, len(df.columns) * total_cell_size - 0.5)
 
-# Add titles and labels with enhanced styling
-title = ax_main.set_title('Chess Grandmasters ELO Rating Progression (Detailed GitHub-style Contribution Chart)', 
-                fontsize=18, fontweight='bold', pad=20, color='#c9d1d9')
+# Add titles and labels with enhanced styling (shortened title)
+title = ax_main.set_title('Chess Grandmasters ELO Rating Progression', 
+                fontsize=16, fontweight='bold', pad=15, color='#c9d1d9')
 # Add subtle glow effect to title
 title.set_path_effects([path_effects.withStroke(linewidth=3, foreground='#161b22')])
 
-ax_main.set_xlabel('Age', fontsize=14, labelpad=10, color='#c9d1d9', fontweight='bold')
+ax_main.set_xlabel('Age', fontsize=12, labelpad=8, color='#c9d1d9', fontweight='bold')
 
 # Create an enhanced color legend in the separate axis
 ax_legend.axis('off')
@@ -314,26 +314,24 @@ legend_title = ax_legend.text(0.5, 0.95, "Rating Levels",
                             fontweight='bold', color='#c9d1d9')
 legend_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
-# Create more detailed rating level boxes (10 levels instead of 5)
-step = (max_rating - min_rating) / 10
+# Create simplified rating level boxes (5 levels instead of 10)
+step = (max_rating - min_rating) / 5
 rating_levels = []
-for i in range(10):
+for i in range(5):
     start = min_rating + i * step
     end = min_rating + (i+1) * step
     # Get color from our enhanced colormap
-    color_val = i / 10
+    color_val = i / 5
     color = github_cmap(color_val)
     rating_levels.append({
-        "label": f"{int(start)}-{int(end)}" if i < 9 else f"> {int(start)}",
+        "label": f"{int(start)}-{int(end)}" if i < 4 else f"> {int(start)}",
         "color": color
     })
 
-# Draw the rating level boxes in a grid (2 columns x 5 rows)
+# Draw the rating level boxes in a single column
 for i, level in enumerate(rating_levels):
-    col = i // 5
-    row = i % 5
-    x_pos = 0.1 + col * 0.5
-    y_pos = 0.85 - (row * 0.1)
+    y_pos = 0.85 - (i * 0.15)
+    x_pos = 0.1
     
     # Add color box with 3D effect
     rect = patches.Rectangle((x_pos, y_pos-0.03), 0.08, 0.06, 
@@ -384,8 +382,8 @@ info_title = ax_info.set_title('Rating Categories and Historical Context',
                              fontsize=14, fontweight='bold', color='#c9d1d9')
 info_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
 
-# Create a grid for the info panel with 3 columns for more detail
-info_grid = gridspec.GridSpecFromSubplotSpec(1, 3, subplot_spec=gs[1, :])
+# Create a grid for the info panel with 2 columns instead of 3
+info_grid = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[1, :])
 
 # Rating categories section with enhanced styling
 ax_categories = fig.add_subplot(info_grid[0, 0])
@@ -461,38 +459,13 @@ for note in historical_notes:
                    color='#c9d1d9', zorder=2)
     y_pos -= 0.15
 
-# Add player achievements section
-ax_achievements = fig.add_subplot(info_grid[0, 2])
-ax_achievements.axis('off')
-
-# Add a background panel
-ax_achievements.add_patch(
-    patches.Rectangle((0.02, 0.02), 0.96, 0.96, 
-                     facecolor='#161b22', edgecolor='#30363d',
-                     linewidth=1, alpha=0.7, zorder=1)
-)
-
-# Add a title for the section
-ach_title = ax_achievements.text(0.5, 0.95, "Notable Achievements", 
-                               fontsize=12, fontweight='bold', color='#c9d1d9',
-                               ha='center', va='top', zorder=2)
-ach_title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#161b22')])
-
-# List some key achievements
-achievements = [
+# Combine historical context and achievements in one panel
+historical_notes.extend([
+    "",
     "• Kasparov: Longest time as world #1 (255 months)",
     "• Carlsen: Highest classical rating (2882)",
-    "• Fischer: 20 consecutive wins against top players",
-    "• Tal: Known for brilliant sacrificial attacks",
-    "• Capablanca: Went 8 years without losing a game",
-    "• Lasker: Held World Championship for 27 years"
-]
-
-y_pos = 0.85
-for achievement in achievements:
-    ax_achievements.text(0.05, y_pos, achievement, fontsize=9, va='top', ha='left', 
-                        color='#c9d1d9', zorder=2)
-    y_pos -= 0.15
+    "• Fischer: 20 consecutive wins against top players"
+])
 
 # Create an enhanced timeline of chess history in the bottom panel
 ax_timeline.axis('off')
@@ -507,26 +480,15 @@ ax_timeline.add_patch(
                      linewidth=1, alpha=0.7, zorder=1)
 )
 
-# Create more detailed timeline events
+# Simplified timeline events (fewer events)
 timeline_events = [
-    {"year": 1886, "event": "First official World Championship (Steinitz)", "importance": "major"},
-    {"year": 1894, "event": "Lasker defeats Steinitz", "importance": "minor"},
-    {"year": 1921, "event": "Capablanca defeats Lasker", "importance": "minor"},
+    {"year": 1886, "event": "First official World Championship", "importance": "major"},
     {"year": 1924, "event": "FIDE founded", "importance": "major"},
-    {"year": 1927, "event": "Alekhine defeats Capablanca", "importance": "minor"},
-    {"year": 1935, "event": "Euwe defeats Alekhine", "importance": "minor"},
-    {"year": 1948, "event": "First FIDE World Championship Tournament", "importance": "major"},
-    {"year": 1958, "event": "Botvinnik-Tal rivalry begins", "importance": "minor"},
     {"year": 1970, "event": "FIDE rating system introduced", "importance": "major"},
     {"year": 1972, "event": "Fischer-Spassky 'Match of the Century'", "importance": "major"},
-    {"year": 1975, "event": "Fischer forfeits title to Karpov", "importance": "minor"},
     {"year": 1985, "event": "Kasparov becomes youngest World Champion", "importance": "major"},
-    {"year": 1993, "event": "PCA/FIDE split", "importance": "minor"},
     {"year": 1996, "event": "Kasparov vs Deep Blue", "importance": "major"},
-    {"year": 2000, "event": "Kramnik defeats Kasparov", "importance": "minor"},
-    {"year": 2006, "event": "FIDE/PCA reunification match", "importance": "minor"},
     {"year": 2013, "event": "Carlsen becomes World Champion", "importance": "major"},
-    {"year": 2018, "event": "AlphaZero defeats Stockfish", "importance": "minor"},
     {"year": 2023, "event": "Ding Liren becomes World Champion", "importance": "major"}
 ]
 
@@ -601,8 +563,8 @@ for event in timeline_events:
         ax_timeline.plot([x_pos, x_pos], [0.5, y_text], '--', color='#30363d', 
                         linewidth=0.5, alpha=0.7, zorder=2)
 
-# Add a watermark
-watermark = ax_main.text(0.5, 0.5, "CHESS ELO", fontsize=100, color='#161b22',
+# Add a smaller watermark
+watermark = ax_main.text(0.5, 0.5, "CHESS ELO", fontsize=60, color='#161b22',
                         ha='center', va='center', alpha=0.1, zorder=1,
                         fontweight='bold', rotation=30)
 
@@ -610,9 +572,9 @@ watermark = ax_main.text(0.5, 0.5, "CHESS ELO", fontsize=100, color='#161b22',
 fig.text(0.01, 0.01, "Created with matplotlib • Data source: FIDE and historical records • © 2025",
         fontsize=8, color='#8b949e', ha='left')
 
-# Adjust layout and save with higher resolution
+# Adjust layout with more space between elements
 plt.tight_layout()
-fig.subplots_adjust(hspace=0.3, wspace=0.05)
-plt.savefig('chess_grandmasters_github_style_detailed.png', dpi=300, bbox_inches='tight', 
+fig.subplots_adjust(hspace=0.4, wspace=0.1)
+plt.savefig('chess_grandmasters_github_style_detailed.png', dpi=150, bbox_inches='tight', 
            facecolor='#0d1117', pad_inches=0.2)
 plt.show()
